@@ -1,0 +1,38 @@
+on:
+  schedule:
+    # runs every day at 9:00 AM UTC in jan, feb, sep-dec
+    - cron:  '0 9 * 1,2,9-12 *'
+  workflow_dispatch:
+
+name: Update Current Season PBP and Stats
+
+jobs:
+  update:
+    name: Update PBP
+    runs-on: macOS-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: r-lib/actions/setup-r@v1
+      - name: Install remotes and nflfastR
+        run: |
+          install.packages("remotes")
+          remotes::install_github("mrcaseb/nflfastR", dependencies = TRUE, type = "both")
+        shell: Rscript {0}
+      - name: Install necessary packages
+        run: |
+          install.packages(c("readr", "arrow", "callr"), dependencies = TRUE, type = "both")
+        shell: Rscript {0}
+      - name: Run update script
+        run: Rscript -e 'source("R/update_current_season_pbp.R")'
+      - name: Commit results
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git pull
+          Rscript -e 'source("R/make_pbp_commit.R")'
+      - name: Run stats script
+        run: Rscript -e 'source("R/save_stats.R")'
+      - name: Push results
+        run: |
+          git pull
+          git push origin master || echo "No changes to commit"
