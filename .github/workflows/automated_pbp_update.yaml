@@ -16,7 +16,7 @@ jobs:
       - name: Install remotes and nflfastR
         run: |
           install.packages("remotes")
-          remotes::install_github("mrcaseb/nflfastR", dependencies = TRUE, type = "both")
+          remotes::install_github("nflverse/nflfastR", dependencies = TRUE, type = "both")
         shell: Rscript {0}
       - name: Install necessary packages
         run: |
