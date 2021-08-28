@@ -17,7 +17,8 @@ jobs:
         run: |
           install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
           pak::pkg_system_requirements("nflfastR", sudo = TRUE, execute = TRUE)
-          pak::pak(c("nflverse/nflfastR","readr","arrow","callr"))
+          pak::pak(c("nflverse/nflfastR"), dependencies = TRUE)
+          pak::pak(c(""readr","arrow","callr"))
         shell: Rscript {0}
       - name: Run update script
         run: Rscript -e 'source("R/update_current_season_pbp.R")'
