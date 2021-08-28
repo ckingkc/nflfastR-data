@@ -16,7 +16,7 @@ jobs:
       - name: Install pak and nflfastR
         run: |
           install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
-          pak::pkg_system_requirements("nflverse/nflfastR", sudo = TRUE, execute = TRUE)
+          pak::pkg_system_requirements("nflfastR", sudo = TRUE, execute = TRUE)
           pak::pak(c("nflverse/nflfastR","readr","arrow","callr"))
         shell: Rscript {0}
       - name: Run update script
