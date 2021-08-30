@@ -1,12 +1,17 @@
+rm(list = ls())
+gc()
 `%>%` <- magrittr::`%>%`
 future::plan("multisession")
 
+cli::cli_alert_info("Read pbp...")
 pbp_df <- furrr::future_map_dfr(1999:nflfastR:::most_recent_season(), function(x){
   qs::qread(glue::glue("data/play_by_play_{x}.qs"))
 })
 
+cli::cli_alert_info("Compute weekly stats...")
 stats_df <- nflfastR::calculate_player_stats(pbp_df, weekly = TRUE)
 
+cli::cli_alert_info("Save data...")
 # rds
 saveRDS(stats_df, 'data/player_stats.rds')
 # csv.gz
@@ -20,6 +25,7 @@ qs::qsave(stats_df, 'data/player_stats.qs',
           compress_level = 22,
           shuffle_control = 15)
 
+cli::cli_alert_info("Commit and finish...")
 message <- sprintf("Updated %s (ET) using nflfastR version %s", lubridate::now("America/New_York"), utils::packageVersion("nflfastR"))
 
 git <- function(..., echo_cmd = TRUE, echo = TRUE, error_on_status = FALSE) {
