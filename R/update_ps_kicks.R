@@ -5,7 +5,7 @@ library(readr)
 library(arrow)
 library(qs)
 
-base_kicks <- load_pbp() %>% 
+base_kicks <- nflreadr::load_pbp(seasons = TRUE) %>% 
   dplyr::filter(field_goal_attempt == 1 | extra_point_attempt == 1) %>% 
   dplyr::select(
     season,
