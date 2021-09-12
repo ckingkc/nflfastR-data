@@ -1,9 +1,9 @@
 # Field Goals
 library(nflreadr)
-library(tidyverse)
+library(dplyr)
 
-base_kicks <- load_pbp(1999:2020) %>% 
-  filter(field_goal_attempt == 1 | extra_point_attempt == 1) %>% 
+base_kicks <- load_pbp(1999:2020) %>%
+  filter(field_goal_attempt == 1 | extra_point_attempt == 1) %>%
   select(
     season,
     week,
@@ -16,8 +16,8 @@ base_kicks <- load_pbp(1999:2020) %>%
     extra_point_attempt,
     field_goal_result,
     extra_point_result
-  ) %>% 
-  group_by(season,week,season_type,team,player_name,player_id) %>% 
+  ) %>%
+  group_by(season,week,season_type,team,player_name,player_id) %>%
   summarise(
     fg_made = sum(field_goal_result == "made", na.rm = TRUE),
     fg_missed = sum(field_goal_result == "missed", na.rm = TRUE),
@@ -48,14 +48,14 @@ base_kicks <- load_pbp(1999:2020) %>%
     fg_made_list = kick_distance[field_goal_result == "made"] %>% na.omit() %>%  paste(collapse = ";"),
     fg_missed_list = kick_distance[field_goal_result == "missed"] %>% na.omit() %>% paste(collapse = ";"),
     fg_blocked_list = kick_distance[field_goal_result == "blocked"] %>% na.omit() %>% paste(collapse = ";")
-  ) %>% 
+  ) %>%
   ungroup()
 
-game_winners <- load_pbp(2000:2020) %>% 
-  group_by(game_id,posteam) %>% 
-  filter(fixed_drive == max(fixed_drive)) %>% 
-  ungroup() %>% 
-  filter(field_goal_attempt == 1, between(score_differential,-2,0)) %>% 
+game_winners <- load_pbp(2000:2020) %>%
+  group_by(game_id,posteam) %>%
+  filter(fixed_drive == max(fixed_drive)) %>%
+  ungroup() %>%
+  filter(field_goal_attempt == 1, between(score_differential,-2,0)) %>%
   select(
     season,
     week,
@@ -72,24 +72,24 @@ game_winners <- load_pbp(2000:2020) %>%
     extra_point_attempt,
     field_goal_result,
     extra_point_result
-  ) %>% 
-  group_by(season,week,season_type,team,player_name,player_id) %>% 
+  ) %>%
+  group_by(season,week,season_type,team,player_name,player_id) %>%
   summarise(
     gwfg_att = n(),
     gwfg_distance = kick_distance,
     gwfg_made = sum(field_goal_result == "made", na.rm = TRUE),
     gwfg_missed = sum(field_goal_result == "missed", na.rm = TRUE),
     gwfg_blocked = sum(field_goal_result == "blocked", na.rm = TRUE),
-  ) %>% 
+  ) %>%
   ungroup()
 
-full_kicks <- base_kicks %>% 
+full_kicks <- base_kicks %>%
   left_join(
-    game_winners, 
-    by = c("season", "week", "season_type", "team", "player_name", "player_id")) %>% 
+    game_winners,
+    by = c("season", "week", "season_type", "team", "player_name", "player_id")) %>%
   mutate(
     across(starts_with("gwfg"),replace_na,0)
-  ) %>% 
+  ) %>%
   relocate(
     starts_with("gwfg"),
     .after = fg_blocked_distance
