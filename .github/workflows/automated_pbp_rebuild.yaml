@@ -1,41 +1,27 @@
 on: workflow_dispatch
 
-name: Full PBP Rebuild
+name: PBP Rebuild
 
 jobs:
-  pbp_rebuild:
-
-    runs-on: ubuntu-latest
-
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-
+  update:
+    name: PBP Rebuild
+    runs-on: macOS-latest
     steps:
       - uses: actions/checkout@v2
-
       - uses: r-lib/actions/setup-r@v1
-        with:
-          use-public-rspm: true
-
-      - uses: r-lib/actions/setup-r-dependencies@v1
-        with:
-           cache-version: 1
-           extra-packages: |
-            nflverse/nflfastR
-            nflverse/nflreadr
-
-      - name: Run update script
+      - name: Install pak and nflfastR
         run: |
-          Sys.setenv(NFLFASTR_VERSION = as.character(packageVersion("nflfastR")))
-          source("R/update_all_seasons_pbp.R")
-
+          install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
+          pak::pkg_system_requirements("nflfastR", sudo = TRUE, execute = TRUE)
+          pak::pak(c("nflverse/nflfastR"), dependencies = TRUE)
+          pak::pak(c("readr","arrow","callr"))
         shell: Rscript {0}
-
+      - name: Run update script
+        run: Rscript -e 'source("R/update_all_seasons_pbp.R")'
       - name: Commit results
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git pull
-          git add data
-          git commit -m "Full PBP rebuild on `date` using nflfastR version $NFLFASTR_VERSION"  || echo "No changes to commit"
+          Rscript -e 'source("R/make_pbp_commit.R")'
           git push origin master || echo "No changes to commit"
