@@ -9,27 +9,38 @@ name: Update Current Season PBP and Stats
 jobs:
   update:
     name: Update PBP
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
-      - name: Install pak and nflfastR
-        run: |
-          install.packages("pak", repos = "https://r-lib.github.io/p/pak/dev/")
-          pak::pkg_system_requirements("nflfastR", sudo = TRUE, execute = TRUE)
-          pak::pak(c("nflverse/nflfastR"), dependencies = TRUE)
-          pak::pak(c("readr","arrow","callr"))
-        shell: Rscript {0}
-      - name: Run update script
+      
+      - name: Install dependencies from DESCRIPTION
+        uses: r-lib/actions/setup-r-dependencies@v1
+        with:
+           cache-version: 1
+           extra-packages: |
+            nflverse/nflfastR
+            nflverse/nflreadr   
+                
+      - name: Run pbp update
         run: Rscript -e 'source("R/update_current_season_pbp.R")'
+      
       - name: Commit results
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
+          Rscript -e 'writeLines(paste0("export NFLFASTR_VERSION=",as.character(packageVersion("nflfastR"))),".ver")'
+          source .ver
           git pull
-          Rscript -e 'source("R/make_pbp_commit.R")'
+          git add data
+          git commit -m "Updated on `date` using nflfastR version $NFLFASTR_VERSION"  || echo "No changes to commit"
+          git push origin master || echo "No changes to commit"
+      
       - name: Run stats script
         run: Rscript -e 'source("R/save_stats.R")'
+      
       - name: Push results
         run: |
           git pull
