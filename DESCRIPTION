@@ -29,6 +29,7 @@ Imports:
     callr (>= 3.7.0),
     readr (>= 2.0.0),
     dplyr (>= 1.0.7),
+    gsisdecoder,
     magrittr (>= 2.0.1),
     future (>= 1.21.0),
     furrr (>= 0.2.2),
