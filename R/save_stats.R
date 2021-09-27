@@ -1,7 +1,7 @@
 rm(list = ls())
 gc()
 `%>%` <- magrittr::`%>%`
-future::plan("multisession")
+future::plan("multicore")
 
 cli::cli_alert_info("Read pbp...")
 pbp_df <- furrr::future_map_dfr(1999:nflfastR:::most_recent_season(), function(x){
