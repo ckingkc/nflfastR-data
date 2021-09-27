@@ -6,3 +6,5 @@
 ^man$
 ^schedules$
 ^wordmarks$
+^.*\.Rproj$
+^\.Rproj\.user$

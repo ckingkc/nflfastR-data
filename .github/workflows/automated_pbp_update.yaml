@@ -15,18 +15,18 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: r-lib/actions/setup-r@v1
-      
+
       - name: Install dependencies from DESCRIPTION
         uses: r-lib/actions/setup-r-dependencies@v1
         with:
            cache-version: 1
            extra-packages: |
             nflverse/nflfastR
-            nflverse/nflreadr   
-                
+            nflverse/nflreadr
+
       - name: Run pbp update
         run: Rscript -e 'source("R/update_current_season_pbp.R")'
-      
+
       - name: Commit results
         run: |
           git config --local user.email "actions@github.com"
@@ -37,11 +37,17 @@ jobs:
           git add data
           git commit -m "Updated on `date` using nflfastR version $NFLFASTR_VERSION"  || echo "No changes to commit"
           git push origin master || echo "No changes to commit"
-      
-      - name: Run stats script
+
+      - name: Run player_stats script
         run: Rscript -e 'source("R/save_stats.R")'
-      
-      - name: Push results
+
+      - name: Commit results
         run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          Rscript -e 'writeLines(paste0("export NFLFASTR_VERSION=",as.character(packageVersion("nflfastR"))),".ver")'
+          source .ver
           git pull
+          git add data
+          git commit -m "Updated on `date` using nflfastR version $NFLFASTR_VERSION"  || echo "No changes to commit"
           git push origin master || echo "No changes to commit"
