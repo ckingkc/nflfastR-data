@@ -1,4 +1,4 @@
-Package: nflfastr-data
+Package: nflfastr.data
 Title: Data repository of player-level game data
 Version: 0.0.1
 Authors@R: 
@@ -34,5 +34,5 @@ Imports:
     furrr (>= 0.2.2),
     glue (>= 1.4.2)
 Remotes:
-  github::nflverse/nflfastR,
-  github::nflverse/nflreadr
+  nflverse/nflfastR,
+  nflverse/nflreadr
