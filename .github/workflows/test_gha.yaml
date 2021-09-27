@@ -35,6 +35,6 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
           git pull
-          git add data
+          git add blob.txt
           git commit -m "GHA test on `date` using nflfastR version $NFLFASTR_VERSION"  || echo "No changes to commit"
           git push origin master || echo "No changes to commit"
