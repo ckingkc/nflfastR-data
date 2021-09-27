@@ -28,14 +28,13 @@ jobs:
           Sys.setenv(NFLFASTR_VERSION = as.character(packageVersion("nflfastR")))
           cat(Sys.getenv("NFLFASTR_VERSION"))
           writeLines(as.character(runif(1)),"blob.txt")
-
         shell: Rscript {0}
 
       - name: Commit results
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Actions"
-          Rscript 'Sys.setenv(NFLFASTR_VERSION = as.character(packageVersion("nflfastR")))'
+          Rscript -e 'Sys.setenv(NFLFASTR_VERSION = as.character(packageVersion("nflfastR")))'
           git pull
           git add blob.txt
           git commit -m "GHA test on `date` using nflfastR version `$NFLFASTR_VERSION`"  || echo "No changes to commit"
