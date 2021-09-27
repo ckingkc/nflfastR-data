@@ -26,7 +26,7 @@ jobs:
       - name: Run update script
         run: |
           Sys.setenv(NFLFASTR_VERSION = as.character(packageVersion("nflfastR")))
-          cat(Sys.getenv(NFLFASTR_VERSION))
+          cat(Sys.getenv("NFLFASTR_VERSION"))
           writeLines(as.character(runif(1)),"blob.txt")
 
         shell: Rscript {0}
