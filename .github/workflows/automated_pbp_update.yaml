@@ -9,7 +9,7 @@ name: Update Current Season PBP and Stats
 jobs:
   update:
     name: Update PBP
-    runs-on: macOS-latest
+    runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     steps:
