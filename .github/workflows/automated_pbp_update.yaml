@@ -4,11 +4,11 @@ on:
     - cron:  '0 9 * 1,2,9-12 *'
   workflow_dispatch:
 
-name: Update Current Season PBP and Stats
+name: update_current_season_pbp_and_stats
 
 jobs:
   update:
-    name: Update PBP
+    name: update_pbp
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
