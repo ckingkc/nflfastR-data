@@ -51,3 +51,16 @@ jobs:
           git add data
           git commit -m "Updated on `date` using nflfastR version $NFLFASTR_VERSION"  || echo "No changes to commit"
           git push origin master || echo "No changes to commit"
+
+      - name: Run player_stats_kicking script
+        run: Rscript -e 'source("R/update_ps_kicks.R")'
+
+      - name: Commit results
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git pull
+          source .ver
+          git add data
+          git commit -m "Updated kicking stats on `date` using nflfastR version $NFLFASTR_VERSION"  || echo "No changes to commit"
+          git push origin master || echo "No changes to commit"
